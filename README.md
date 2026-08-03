@@ -1,18 +1,14 @@
-LoanGuard is a multi-tenant database-driven Loan Management System designed for banks, financial institutions, and microfinance organizations.
+=========================================================
+                    🛡️ LOANGUARD
+         Automated Loan Decision Support System
+=========================================================
 
-The project manages the complete loan lifecycle, including borrower registration, credit risk assessment, approval workflow, loan disbursement, repayment tracking, collateral management, and audit logging.
+**LoanGuard** is an Automated Loan Decision Support System designed to help banks reduce risky lending and loan defaults. It automates credit risk assessment by analyzing loan applications and generating intelligent recommendations, while allowing bank staff to review the assessment and make the final approval or rejection decision. The system streamlines the loan approval process, improves decision accuracy, and supports effective loan and payment management.
 
-## Features
-
-- Multi-tenant support for multiple financial institutions.
-- Institution and branch management.
-- User authentication and role-based access control.
-- Borrower profile, address, employment, and guarantor management.
-- Loan application, approval, and disbursement management.
-- Loan repayment and payment tracking.
-- Loan schedule and status history management.
-- Credit risk assessment using predefined risk factors.
-- Collateral management for secured loans.
-- Committee-based approval workflow.
-- Document management for borrowers and loans.
-- Notification and audit logging.
+✨ Features
+**Borrower Management** – Register and manage borrower information for loan applications.
+**Loan Application Processing** – Allow Loan Officers to receive, verify, and process loan applications.
+**AI-Assisted Credit Risk Assessment** – Automatically evaluate applications by generating credit scores, risk levels, default probabilities, and recommendations.
+**Credit Assessment Review** – Enable Credit Analysts to review and validate AI-generated assessments before final approval.
+**Loan Decision Support** – Allow Branch Managers to make informed approval or rejection decisions based on the application and assessment.
+**Loan & Payment Management** – Create approved loans, categorize them by loan type, and track loan repayments.
