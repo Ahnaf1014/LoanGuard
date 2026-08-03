@@ -1,5 +1,5 @@
-                    🛡️ LOANGUARD
-         Automated Loan Decision Support System
+🛡️ LOANGUARD
+Automated Loan Decision Support System
 =========================================================
 
 **LoanGuard** is an Automated Loan Decision Support System designed to help banks reduce risky lending and loan defaults. It automates credit risk assessment by analyzing loan applications and generating intelligent recommendations, while allowing bank staff to review the assessment and make the final approval or rejection decision. The system streamlines the loan approval process, improves decision accuracy, and supports effective loan and payment management.
