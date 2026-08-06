@@ -1,0 +1,49 @@
+{% extends "base.html" %} {% block content %}
+
+<h1 class="mb-4">LoanGuard Dashboard</h1>
+
+<div class="row">
+  <div class="col-md-3">
+    <div class="card text-bg-primary mb-3">
+      <div class="card-body">
+        <h5>Total Borrowers</h5>
+        <h2>{{ total_borrowers }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card text-bg-success mb-3">
+      <div class="card-body">
+        <h5>Applications</h5>
+        <h2>{{ total_applications }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card text-bg-warning mb-3">
+      <div class="card-body">
+        <h5>Pending</h5>
+        <h2>{{ pending }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card text-bg-dark mb-3">
+      <div class="card-body">
+        <h5>Total Requested</h5>
+        <h4>৳ {{ total_amount }}</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mt-4">
+  <a href="/borrowers" class="btn btn-primary"> Manage Borrowers </a>
+
+  <a href="/applications" class="btn btn-success"> Manage Applications </a>
+</div>
+
+{% endblock %}

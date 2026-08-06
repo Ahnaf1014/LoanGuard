@@ -23,6 +23,20 @@
 
       <br /><br />
 
+      <label for="loan_officer_id">Loan Officer</label>
+
+      <select id="loan_officer_id" name="loan_officer_id" required>
+        {% for officer in loan_officers %}
+
+        <option value="{{ officer.staff_id }}">
+          {{ officer.first_name }} {{ officer.last_name }}
+        </option>
+
+        {% endfor %}
+      </select>
+
+      <br /><br />
+
       <label for="application_date">Application Date</label>
 
       <input

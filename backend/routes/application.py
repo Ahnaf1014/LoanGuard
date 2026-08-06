@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect
+from flask import Blueprint, render_template, request, redirect, flash
 from database.connection import get_connection
 
 application_bp = Blueprint("application", __name__)
@@ -60,7 +60,7 @@ def add_application():
         """,
             (
                 request.form["borrower_id"],
-                1,
+                request.form["loan_officer_id"],
                 None,
                 request.form["application_date"],
                 request.form["requested_amount"],
@@ -86,7 +86,65 @@ def add_application():
 
     borrowers = cursor.fetchall()
 
+    cursor.execute("""
+        SELECT
+            staff_id,
+            first_name,
+            last_name
+        FROM BANK_STAFF
+        WHERE role = 'LoanOfficer'
+""")
+
+    loan_officers = cursor.fetchall()
+
     cursor.close()
     conn.close()
 
-    return render_template("add_application.html", borrowers=borrowers)
+    return render_template(
+        "add_application.html", borrowers=borrowers, loan_officers=loan_officers
+    )
+
+
+@application_bp.route(
+    "/applications/edit/<int:application_id>", methods=["GET", "POST"]
+)
+def edit_application(application_id):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    if request.method == "POST":
+
+        cursor.execute(
+            """
+            UPDATE LOAN_APPLICATION
+            SET application_status=%s
+            WHERE application_id=%s
+        """,
+            (request.form["application_status"], application_id),
+        )
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("Application status updated successfully!", "success")
+
+        return redirect("/applications")
+
+    cursor.execute(
+        """
+        SELECT *
+        FROM LOAN_APPLICATION
+        WHERE application_id=%s
+    """,
+        (application_id,),
+    )
+
+    application = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return render_template("edit_application.html", application=application)

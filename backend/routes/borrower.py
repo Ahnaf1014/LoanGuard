@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, request, redirect
+from flask import Blueprint, render_template, request, redirect, flash
 from database.connection import get_connection
+import pymysql
 
 borrower_bp = Blueprint("borrower", __name__)
 
@@ -63,6 +64,7 @@ def add_borrower():
         cursor.close()
         conn.close()
 
+        flash("Borrower added successfully!", "success")
         return redirect("/borrowers")
     # GET
     return render_template("add_borrower.html")
@@ -74,18 +76,28 @@ def delete_borrower(borrower_id):
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute(
-        """
-        DELETE FROM BORROWER
-        WHERE borrower_id=%s
-    """,
-        (borrower_id,),
-    )
+    try:
 
-    conn.commit()
+        cursor.execute(
+            """
+            DELETE FROM BORROWER
+            WHERE borrower_id=%s
+        """,
+            (borrower_id,),
+        )
 
-    cursor.close()
-    conn.close()
+        conn.commit()
+
+        flash("Borrower deleted successfully!", "success")
+
+    except pymysql.err.IntegrityError:
+
+        flash("Cannot delete borrower because they have loan applications.", "danger")
+
+    finally:
+
+        cursor.close()
+        conn.close()
 
     return redirect("/borrowers")
 
@@ -130,6 +142,7 @@ def edit_borrower(borrower_id):
         cursor.close()
         conn.close()
 
+        flash("Borrower updated successfully!", "success")
         return redirect("/borrowers")
 
     cursor.execute(
