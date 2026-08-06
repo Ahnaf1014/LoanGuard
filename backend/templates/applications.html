@@ -1,0 +1,45 @@
+{% extends "base.html" %} {% block content %}
+
+<h2>Loan Applications</h2>
+
+<a href="/applications/add" class="btn btn-success mb-3"> New Application </a>
+
+<table class="table table-bordered table-hover">
+  <thead>
+    <tr>
+      <th>ID</th>
+
+      <th>Borrower</th>
+
+      <th>Date</th>
+
+      <th>Amount</th>
+
+      <th>Status</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for application in applications %}
+
+    <tr>
+      <td>{{ application.application_id }}</td>
+
+      <td>{{ application.first_name }} {{ application.last_name }}</td>
+
+      <td>{{ application.application_date }}</td>
+
+      <td>{{ application.requested_amount }}</td>
+
+      <td>
+        <span class="badge bg-warning text-dark">
+          {{ application.application_status }}
+        </span>
+      </td>
+    </tr>
+
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

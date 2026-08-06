@@ -64,5 +64,86 @@ def add_borrower():
         conn.close()
 
         return redirect("/borrowers")
-
+    # GET
     return render_template("add_borrower.html")
+
+
+@borrower_bp.route("/borrowers/delete/<int:borrower_id>")
+def delete_borrower(borrower_id):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        DELETE FROM BORROWER
+        WHERE borrower_id=%s
+    """,
+        (borrower_id,),
+    )
+
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+
+    return redirect("/borrowers")
+
+
+@borrower_bp.route("/borrowers/edit/<int:borrower_id>", methods=["GET", "POST"])
+def edit_borrower(borrower_id):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    if request.method == "POST":
+
+        cursor.execute(
+            """
+            UPDATE BORROWER
+            SET
+                first_name=%s,
+                last_name=%s,
+                nid=%s,
+                email=%s,
+                house_no=%s,
+                street=%s,
+                city=%s,
+                postal_code=%s
+            WHERE borrower_id=%s
+        """,
+            (
+                request.form["first_name"],
+                request.form["last_name"],
+                request.form["nid"],
+                request.form["email"],
+                request.form["house_no"],
+                request.form["street"],
+                request.form["city"],
+                request.form["postal_code"],
+                borrower_id,
+            ),
+        )
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        return redirect("/borrowers")
+
+    cursor.execute(
+        """
+        SELECT *
+        FROM BORROWER
+        WHERE borrower_id=%s
+    """,
+        (borrower_id,),
+    )
+
+    borrower = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return render_template("edit_borrower.html", borrower=borrower)

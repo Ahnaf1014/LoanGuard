@@ -1,0 +1,92 @@
+{% extends "base.html" %} {% block content %}
+
+<h2>Edit Borrower</h2>
+
+<form method="POST">
+  <div class="mb-3">
+    <label for="first_name">First Name</label>
+    <input
+      class="form-control"
+      id="first_name"
+      name="first_name"
+      value="{{ borrower.first_name }}"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="last_name">Last Name</label>
+    <input
+      class="form-control"
+      id="last_name"
+      name="last_name"
+      value="{{ borrower.last_name }}"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="nid">NID</label>
+    <input
+      class="form-control"
+      id="nid"
+      name="nid"
+      value="{{ borrower.nid }}"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="email">Email</label>
+    <input
+      class="form-control"
+      id="email"
+      name="email"
+      type="email"
+      value="{{ borrower.email }}"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="house_no">House No</label>
+    <input
+      class="form-control"
+      id="house_no"
+      name="house_no"
+      value="{{ borrower.house_no }}"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="street">Street</label>
+    <input
+      class="form-control"
+      id="street"
+      name="street"
+      value="{{ borrower.street }}"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="city">City</label>
+    <input
+      class="form-control"
+      id="city"
+      name="city"
+      value="{{ borrower.city }}"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="postal_code">Postal Code</label>
+    <input
+      class="form-control"
+      id="postal_code"
+      name="postal_code"
+      value="{{ borrower.postal_code }}"
+    />
+  </div>
+
+  <button type="submit" class="btn btn-primary">Save Changes</button>
+
+  <a class="btn btn-secondary" href="/borrowers"> Cancel </a>
+</form>
+
+{% endblock %}
