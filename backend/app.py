@@ -1,18 +1,20 @@
 from flask import Flask
-from database.connection import get_connection
+from routes.borrower import borrower_bp
 
 app = Flask(__name__)
+
+app.register_blueprint(borrower_bp)
 
 
 @app.route("/")
 def home():
-    try:
-        conn = get_connection()
-        conn.close()
-        return "<h1>✅ LoanGuard Database Connected Successfully</h1>"
+    return """
+    <h1>LoanGuard</h1>
 
-    except Exception as e:
-        return f"<h1>❌ Database Connection Failed</h1><br>{e}"
+    <a href="/borrowers">
+        Borrower Management
+    </a>
+    """
 
 
 if __name__ == "__main__":

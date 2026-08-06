@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Borrowers</title>
+</head>
+<body>
+    
+
+<h1>Borrowers</h1>
+
+<a href="/borrowers/add">
+    <button>Add Borrower</button>
+</a>
+
+<br><br>
+
+<table border="1">
+
+<tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Email</th>
+</tr>
+
+{% for borrower in borrowers %}
+
+<tr>
+    <td>{{ borrower.borrower_id }}</td>
+    <td>{{ borrower.first_name }} {{ borrower.last_name }}</td>
+    <td>{{ borrower.email }}</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+</body>
+</html>
