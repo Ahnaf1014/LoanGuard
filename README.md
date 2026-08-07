@@ -191,6 +191,41 @@ pip install -r requirements.txt
 
 ---
 
+# 🚀 Deploying to Render
+
+This project is ready to run on Render as a Python web service, but there is one important caveat:
+
+- Render's free database tier is PostgreSQL, while LoanGuard is built for MySQL.
+- For a free deployment, use a MySQL-compatible free database provider such as PlanetScale, Aiven, or Railway, then set the MySQL connection variables in Render.
+- You can still deploy the web app on Render and connect it to that database.
+
+## Render web service setup
+
+1. Push this repository to GitHub.
+2. In Render, create a new Web Service from the GitHub repo.
+3. Use the following settings:
+   - Build Command: `pip install -r requirements.txt`
+   - Start Command: `gunicorn --chdir backend app:app --bind 0.0.0.0:$PORT`
+4. Add the environment variables in the Render dashboard:
+   - `SECRET_KEY`
+   - `FLASK_DEBUG=false`
+   - `DB_HOST`
+   - `DB_PORT=3306`
+   - `DB_NAME`
+   - `DB_USER`
+   - `DB_PASSWORD`
+5. Connect the web service to your free MySQL database and run the SQL files in the project `database/` folder in the same order shown below.
+
+## Free database options
+
+- PlanetScale (MySQL-compatible) — often the easiest free option for a small app.
+- Aiven free MySQL / MariaDB tier — good if you want a managed database.
+- Railway — includes MySQL plans, but availability changes over time.
+
+If you prefer to stay fully on Render, you would need to migrate the schema from MySQL to PostgreSQL and rewrite the SQL syntax accordingly.
+
+---
+
 # 🗄 Database Setup
 
 Create a MySQL database.
