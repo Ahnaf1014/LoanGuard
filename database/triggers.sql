@@ -1,4 +1,4 @@
-USE LoanGuard;
+USE defaultdb;
 
 -- Payment writes are the single event that changes a loan's outstanding
 -- balance. Only confirmed Paid records affect the amount owed.

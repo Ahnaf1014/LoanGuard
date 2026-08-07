@@ -27,5 +27,8 @@ class Config:
     DB_NAME = os.getenv("DB_NAME", "LoanGuard")
     DB_USER = os.getenv("DB_USER", "root")
     DB_PASSWORD = os.getenv("DB_PASSWORD", "")
+    # PlanetScale and other managed MySQL hosts often require TLS.
+    DB_SSL = os.getenv("DB_SSL", "false").lower() in {"1", "true", "yes"}
+    DB_SSL_CA = os.getenv("DB_SSL_CA", "")
     # Debug is opt-in because Flask's debugger must not be exposed in production.
     DEBUG = os.getenv("FLASK_DEBUG", "false").lower() in {"1", "true", "yes"}

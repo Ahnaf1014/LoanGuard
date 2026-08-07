@@ -1,4 +1,4 @@
-USE LoanGuard;
+USE defaultdb;
 
 -- =====================================================
 -- BANK_STAFF

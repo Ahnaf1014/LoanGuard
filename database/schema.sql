@@ -3,11 +3,7 @@
 -- Part 1
 -- MySQL 8.0+
 -- =====================================================
-DROP DATABASE IF EXISTS LoanGuard;
-
-CREATE DATABASE LoanGuard;
-
-USE LoanGuard;
+USE defaultdb;
 
 -- =====================================================
 -- BORROWER

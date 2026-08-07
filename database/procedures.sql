@@ -1,4 +1,4 @@
-USE LoanGuard;
+USE defaultdb;
 
 -- Reusable status filter for reporting tools. The input is VARCHAR because
 -- callers may be different MySQL clients; the table enum remains authoritative.
