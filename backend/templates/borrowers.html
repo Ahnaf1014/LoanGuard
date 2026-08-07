@@ -1,5 +1,6 @@
 {% extends "base.html" %} {% block content %}
 
+<!-- Borrower directory; values are supplied by routes/borrower.py. -->
 <h2 class="mb-3">Borrowers</h2>
 
 <a href="/borrowers/add" class="btn btn-primary mb-3"> Add Borrower </a>
@@ -25,6 +26,7 @@
       <td>{{ borrower.email }}</td>
 
       <td>
+        <!-- Editing is safe to navigate with GET; deletion requires POST below. -->
         <a
           class="btn btn-warning btn-sm"
           href="/borrowers/edit/{{ borrower.borrower_id }}"
@@ -32,13 +34,16 @@
           Edit
         </a>
 
-        <a
-          class="btn btn-danger btn-sm"
-          href="/borrowers/delete/{{ borrower.borrower_id }}"
-          onclick="return confirm('Delete this borrower?');"
+        <form
+          method="post"
+          action="{{ url_for('borrower.delete_borrower', borrower_id=borrower.borrower_id) }}"
+          class="d-inline"
+          onsubmit="return confirm('Delete this borrower?');"
         >
-          Delete
-        </a>
+          <!-- The confirmation prevents accidental clicks. The server still
+               enforces foreign-key rules before committing the deletion. -->
+          <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+        </form>
       </td>
     </tr>
 

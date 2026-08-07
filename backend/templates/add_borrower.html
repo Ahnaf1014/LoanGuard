@@ -1,15 +1,10 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Add Borrower</title>
-  </head>
+{% extends "base.html" %} {% block content %}
 
-  <body>
-    <h1>Add Borrower</h1>
+<!-- Create form. The database enforces unique NID and email values. -->
+    <h2 class="mb-3">Add Borrower</h2>
 
-    <form method="POST">
+    <form method="POST" class="row g-3">
+      <!-- Required identity fields are the minimum record needed for an application. -->
       <label for="first_name">First Name</label><br />
       <input
         type="text"
@@ -27,6 +22,7 @@
       <label for="email">Email</label><br />
       <input type="email" id="email" name="email" required /><br /><br />
 
+      <!-- Address fields are optional and can be completed later. -->
       <label for="house_no">House No</label><br />
       <input type="text" id="house_no" name="house_no" /><br /><br />
 
@@ -39,7 +35,7 @@
       <label for="postal_code">Postal Code</label><br />
       <input type="text" id="postal_code" name="postal_code" /><br /><br />
 
-      <button type="submit">Save Borrower</button>
+      <div><button type="submit" class="btn btn-primary">Save Borrower</button>
+      <a class="btn btn-secondary" href="{{ url_for('borrower.borrowers') }}">Cancel</a></div>
     </form>
-  </body>
-</html>
+{% endblock %}

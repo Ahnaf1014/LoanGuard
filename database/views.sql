@@ -1,5 +1,7 @@
 USE LoanGuard;
 
+-- Read model for reports and application-list style screens. It deliberately
+-- exposes descriptive borrower and officer names rather than only foreign keys.
 -- =====================================================
 -- VIEW: Loan Application Summary
 -- =====================================================

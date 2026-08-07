@@ -1,5 +1,6 @@
 {% extends "base.html" %} {% block content %}
 
+<!-- Existing values are loaded by routes/borrower.py before this form is rendered. -->
 <h2>Edit Borrower</h2>
 
 <form method="POST">
@@ -24,6 +25,7 @@
   </div>
 
   <div class="mb-3">
+    <!-- NID is editable and is persisted by the borrower update route. -->
     <label for="nid">NID</label>
     <input
       class="form-control"

@@ -1,15 +1,21 @@
+"""Dashboard feature: read-only portfolio totals shown on the home page."""
+
 from flask import Blueprint, render_template
+
 from database.connection import get_connection
 
+# A blueprint keeps dashboard URLs separate from borrower/application features.
 dashboard_bp = Blueprint("dashboard", __name__)
 
 
 @dashboard_bp.route("/")
 def dashboard():
+    """Load summary metrics and render the dashboard landing page."""
 
     conn = get_connection()
     cursor = conn.cursor()
 
+    # Run small aggregate queries instead of loading every record into memory.
     cursor.execute("SELECT COUNT(*) AS total FROM BORROWER")
     total_borrowers = cursor.fetchone()["total"]
 
@@ -29,6 +35,7 @@ def dashboard():
     """)
     total_amount = cursor.fetchone()["total"]
 
+    # This route is read-only; closing releases the MySQL connection promptly.
     cursor.close()
     conn.close()
 

@@ -1,0 +1,70 @@
+{% extends "base.html" %} {% block content %}
+
+<h2 class="mb-3">Add Credit Assessment</h2>
+
+<form method="POST">
+  <div class="mb-3">
+    <label for="application_id" class="form-label">Application</label>
+    <select class="form-select" id="application_id" name="application_id" required>
+      {% for application in applications %}
+      <option value="{{ application.application_id }}">
+        #{{ application.application_id }} - {{ application.borrower_name }} ({{ application.application_status }})
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label for="analyst_id" class="form-label">Credit Analyst</label>
+    <select class="form-select" id="analyst_id" name="analyst_id" required>
+      {% for analyst in analysts %}
+      <option value="{{ analyst.staff_id }}">
+        {{ analyst.first_name }} {{ analyst.last_name }}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label for="assessment_date" class="form-label">Assessment Date</label>
+    <input class="form-control" id="assessment_date" type="date" name="assessment_date" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="credit_score" class="form-label">Credit Score</label>
+    <input class="form-control" id="credit_score" type="number" min="0" max="850" name="credit_score" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="risk_level" class="form-label">Risk Level</label>
+    <select class="form-select" id="risk_level" name="risk_level" required>
+      <option value="Low">Low</option>
+      <option value="Medium">Medium</option>
+      <option value="High">High</option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label for="recommendation" class="form-label">Recommendation</label>
+    <select class="form-select" id="recommendation" name="recommendation" required>
+      <option value="Approve">Approve</option>
+      <option value="Review">Review</option>
+      <option value="Reject">Reject</option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label for="default_probability" class="form-label">Default Probability (%)</label>
+    <input class="form-control" id="default_probability" type="number" step="0.01" min="0" max="100" name="default_probability" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="remarks" class="form-label">Remarks</label>
+    <textarea class="form-control" id="remarks" name="remarks" rows="3"></textarea>
+  </div>
+
+  <button type="submit" class="btn btn-success">Save Assessment</button>
+  <a class="btn btn-secondary" href="{{ url_for('assessment.assessments') }}">Cancel</a>
+</form>
+
+{% endblock %}

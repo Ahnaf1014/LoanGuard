@@ -1,5 +1,6 @@
 {% extends "base.html" %} {% block content %}
 
+<!-- Application register: borrower names are joined in one query by the route. -->
 <h2>Loan Applications</h2>
 
 <a href="/applications/add" class="btn btn-success mb-3"> New Application </a>
@@ -33,6 +34,7 @@
       <td>{{ application.requested_amount }}</td>
 
       <td>
+        <!-- Colour provides a quick status signal without changing the text. -->
         {% if application.application_status == "Approved" %}
 
         <span class="badge bg-success">
@@ -61,24 +63,11 @@
       </td>
 
       <td>
+        <!-- This project supports status review, not direct application deletion. -->
         <a
           href="/applications/edit/{{ application.application_id }}"
           class="btn btn-warning btn-sm"
-        >
-          Change Status
-        </a>
-      </td>
-
-      <td>
-        <a
-          href="/applications/edit/{{ application.application_id }}"
-          class="btn btn-sm btn-primary"
-          >Edit</a
-        >
-        <a
-          href="/applications/delete/{{ application.application_id }}"
-          class="btn btn-sm btn-danger"
-          >Delete</a
+          >Change Status</a
         >
       </td>
     </tr>

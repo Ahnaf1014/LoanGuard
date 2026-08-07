@@ -1,17 +1,13 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Add Loan Application</title>
-  </head>
-  <body>
-    <h1>New Loan Application</h1>
+{% extends "base.html" %} {% block content %}
+
+<!-- New applications start with no manager decision; manager_id is stored as NULL. -->
+    <h2 class="mb-3">New Loan Application</h2>
 
     <form method="POST">
       <label for="borrower_id">Borrower</label>
 
-      <select id="borrower_id" name="borrower_id">
+      <!-- Dropdown choices are limited to records retrieved from MySQL. -->
+      <select id="borrower_id" name="borrower_id" required>
         {% for borrower in borrowers %}
 
         <option value="{{ borrower.borrower_id }}">
@@ -55,6 +51,7 @@
         id="requested_amount"
         type="number"
         step="0.01"
+        min="0.01"
         name="requested_amount"
         title="Requested amount"
         placeholder="e.g. 10000.00"
@@ -63,6 +60,7 @@
 
       <br /><br />
 
+      <!-- Income and occupation are used by the later credit-assessment process. -->
       <label for="occupation">Occupation</label>
 
       <input
@@ -82,6 +80,7 @@
         id="monthly_income"
         type="number"
         step="0.01"
+        min="0.01"
         name="monthly_income"
         title="Monthly income"
         placeholder="e.g. 5000.00"
@@ -103,7 +102,7 @@
 
       <br /><br />
 
-      <button type="submit">Submit Application</button>
+      <button type="submit" class="btn btn-success">Submit Application</button>
+      <a class="btn btn-secondary" href="{{ url_for('application.applications') }}">Cancel</a>
     </form>
-  </body>
-</html>
+{% endblock %}
