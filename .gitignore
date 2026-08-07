@@ -17,3 +17,13 @@ __pycache__/
 
 # Windows
 Thumbs.db
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Flask
+instance/
+
+# Logs
+*.log

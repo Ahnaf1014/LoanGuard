@@ -33,40 +33,49 @@ def add_borrower():
         conn = get_connection()
         cursor = conn.cursor()
 
-        cursor.execute(
-            """
-            INSERT INTO BORROWER(
-                first_name,
-                last_name,
-                nid,
-                email,
-                house_no,
-                street,
-                city,
-                postal_code
+        try:
+
+            cursor.execute(
+                """
+                INSERT INTO BORROWER(
+                    first_name,
+                    last_name,
+                    nid,
+                    email,
+                    house_no,
+                    street,
+                    city,
+                    postal_code
+                )
+                VALUES(%s,%s,%s,%s,%s,%s,%s,%s)
+                """,
+                (
+                    request.form["first_name"],
+                    request.form["last_name"],
+                    request.form["nid"],
+                    request.form["email"],
+                    request.form["house_no"],
+                    request.form["street"],
+                    request.form["city"],
+                    request.form["postal_code"],
+                ),
             )
-            VALUES(%s,%s,%s,%s,%s,%s,%s,%s)
-        """,
-            (
-                request.form["first_name"],
-                request.form["last_name"],
-                request.form["nid"],
-                request.form["email"],
-                request.form["house_no"],
-                request.form["street"],
-                request.form["city"],
-                request.form["postal_code"],
-            ),
-        )
 
-        conn.commit()
+            conn.commit()
+            flash("Borrower added successfully!", "success")
 
-        cursor.close()
-        conn.close()
+        except pymysql.err.IntegrityError:
 
-        flash("Borrower added successfully!", "success")
+            conn.rollback()
+            flash("Email or NID already exists.", "danger")
+
+        finally:
+
+            cursor.close()
+            conn.close()
+
         return redirect("/borrowers")
-    # GET
+
     return render_template("add_borrower.html")
 
 
@@ -82,17 +91,20 @@ def delete_borrower(borrower_id):
             """
             DELETE FROM BORROWER
             WHERE borrower_id=%s
-        """,
+            """,
             (borrower_id,),
         )
 
         conn.commit()
-
-        flash("Borrower deleted successfully!", "success")
+        flash("Borrower deleted successfully.", "success")
 
     except pymysql.err.IntegrityError:
 
-        flash("Cannot delete borrower because they have loan applications.", "danger")
+        conn.rollback()
+        flash(
+            "Cannot delete borrower because loan applications exist.",
+            "danger",
+        )
 
     finally:
 
@@ -110,39 +122,46 @@ def edit_borrower(borrower_id):
 
     if request.method == "POST":
 
-        cursor.execute(
-            """
-            UPDATE BORROWER
-            SET
-                first_name=%s,
-                last_name=%s,
-                nid=%s,
-                email=%s,
-                house_no=%s,
-                street=%s,
-                city=%s,
-                postal_code=%s
-            WHERE borrower_id=%s
-        """,
-            (
-                request.form["first_name"],
-                request.form["last_name"],
-                request.form["nid"],
-                request.form["email"],
-                request.form["house_no"],
-                request.form["street"],
-                request.form["city"],
-                request.form["postal_code"],
-                borrower_id,
-            ),
-        )
+        try:
 
-        conn.commit()
+            cursor.execute(
+                """
+                UPDATE BORROWER
+                SET
+                    first_name=%s,
+                    last_name=%s,
+                    email=%s,
+                    house_no=%s,
+                    street=%s,
+                    city=%s,
+                    postal_code=%s
+                WHERE borrower_id=%s
+                """,
+                (
+                    request.form["first_name"],
+                    request.form["last_name"],
+                    request.form["email"],
+                    request.form["house_no"],
+                    request.form["street"],
+                    request.form["city"],
+                    request.form["postal_code"],
+                    borrower_id,
+                ),
+            )
 
-        cursor.close()
-        conn.close()
+            conn.commit()
+            flash("Borrower updated successfully!", "success")
 
-        flash("Borrower updated successfully!", "success")
+        except pymysql.err.IntegrityError:
+
+            conn.rollback()
+            flash("Email already exists.", "danger")
+
+        finally:
+
+            cursor.close()
+            conn.close()
+
         return redirect("/borrowers")
 
     cursor.execute(
@@ -150,7 +169,7 @@ def edit_borrower(borrower_id):
         SELECT *
         FROM BORROWER
         WHERE borrower_id=%s
-    """,
+        """,
         (borrower_id,),
     )
 

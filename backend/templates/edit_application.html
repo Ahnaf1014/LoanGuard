@@ -4,74 +4,27 @@
 
 <form method="POST">
   <div class="mb-3">
-    <label class="form-label" for="application_status">Status</label>
+    <label for="application_status" class="form-label">Status</label>
 
-    <select
-      class="form-select"
-      id="application_status"
-      name="application_status"
-      title="Application Status"
-    >
-      <option
-        value="Pending"
-        {%
-        if
-        application.application_status=""
-        ="Pending"
-        %}
-        selected
-        {%
-        endif
-        %}
-      >
+    <select class="form-select" id="application_status" name="application_status">
+
+    <option value="Pending" {{ 'selected' if application.application_status == 'Pending' else '' }}>
         Pending
-      </option>
+    </option>
 
-      <option
-        value="Under Review"
-        {%
-        if
-        application.application_status=""
-        ="Under Review"
-        %}
-        selected
-        {%
-        endif
-        %}
-      >
+    <option value="Under Review" {{ 'selected' if application.application_status == 'Under Review' else '' }}>
         Under Review
-      </option>
+    </option>
 
-      <option
-        value="Approved"
-        {%
-        if
-        application.application_status=""
-        ="Approved"
-        %}
-        selected
-        {%
-        endif
-        %}
-      >
+    <option value="Approved" {{ 'selected' if application.application_status == 'Approved' else '' }}>
         Approved
-      </option>
+    </option>
 
-      <option
-        value="Rejected"
-        {%
-        if
-        application.application_status=""
-        ="Rejected"
-        %}
-        selected
-        {%
-        endif
-        %}
-      >
+    <option value="Rejected" {{ 'selected' if application.application_status == 'Rejected' else '' }}>
         Rejected
-      </option>
-    </select>
+    </option>
+
+</select>
   </div>
 
   <button type="submit" class="btn btn-primary">Save</button>
