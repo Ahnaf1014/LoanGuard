@@ -7,6 +7,22 @@ import pymysql
 from config import Config
 
 
+def _build_ssl_config():
+    """Return an SSL config that accepts either a CA file path or PEM text."""
+    if not Config.DB_SSL_CA:
+        # Render's Linux image includes standard CA bundle certificates.
+        return {"ca": "/etc/ssl/certs/ca-certificates.crt"}
+
+    ca_value = Config.DB_SSL_CA.strip()
+    if "-----BEGIN CERTIFICATE-----" in ca_value:
+        cert_path = "/tmp/aiven-ca.pem"
+        with open(cert_path, "w", encoding="utf-8") as cert_file:
+            cert_file.write(ca_value)
+        return {"ca": cert_path}
+
+    return {"ca": ca_value}
+
+
 def get_connection():
     """Return a transaction-controlled connection with dictionary rows.
 
@@ -29,10 +45,6 @@ def get_connection():
     }
 
     if Config.DB_SSL:
-        if Config.DB_SSL_CA:
-            connect_kwargs["ssl"] = {"ca": Config.DB_SSL_CA}
-        else:
-            # Render's Linux image includes standard CA bundle certificates.
-            connect_kwargs["ssl"] = {"ca": "/etc/ssl/certs/ca-certificates.crt"}
+        connect_kwargs["ssl"] = _build_ssl_config()
 
     return pymysql.connect(**connect_kwargs)
