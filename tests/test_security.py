@@ -10,7 +10,7 @@ from flask import Flask, render_template_string
 BACKEND_DIR = Path(__file__).resolve().parents[1] / "backend"
 sys.path.insert(0, str(BACKEND_DIR))
 
-from security import init_security  # noqa: E402
+from core.security import init_security  # noqa: E402
 
 
 class SecurityTests(unittest.TestCase):

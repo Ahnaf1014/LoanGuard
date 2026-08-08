@@ -31,10 +31,11 @@ web pages for those areas are not implemented yet.
 backend/
   app.py                 Flask application factory and entry point
   config.py              environment-backed configuration
+  core/                  auth, RBAC, security, exceptions, validation
   database/connection.py MySQL connection and transaction helpers
-  routes/                 feature blueprints
-  security.py             CSRF and browser security controls
-  validation.py           shared server-side form validation
+  database/repositories/ raw parameterized SQL data access
+  services/              business rules and workflow coordination
+  web/                   feature blueprints and request handling
   templates/              Jinja pages
   static/                 CSS and JavaScript
 database/
@@ -46,7 +47,11 @@ database/
 scripts/
   check_database.py       read-only configured-database health check
 tests/                    standard-library unit tests
+docs/                     architecture and project documentation
 ```
+
+See the [documentation index](docs/README.md) for architecture, database,
+feature, and engineering guides.
 
 ## Local setup
 
@@ -100,19 +105,6 @@ Set-Location backend
 
 Open <http://127.0.0.1:5000>.
 
-## VS Code workspace
-
-Open the repository root in VS Code. The shared workspace includes:
-
-- the correct `backend/.venv` interpreter path;
-- Flask debugging (`LoanGuard: Flask`);
-- test, compile, dependency-install, and database-health tasks;
-- SQLTools MySQL connection metadata without a stored password;
-- formatter, linter, Jinja, SQL, YAML, and environment-file recommendations.
-
-Run tasks from **Terminal → Run Task**. SQLTools prompts for the MySQL password
-when connecting to `LoanGuard (Local MySQL)`.
-
 ## Validation
 
 ```powershell
@@ -133,8 +125,8 @@ backend/.venv/Scripts/python.exe scripts/apply_sql.py --yes database/migrations/
 
 ## Deployment
 
-`render.yaml` and `Procfile` define a Gunicorn deployment. Configure all
-`DB_*` values for a MySQL 8-compatible provider. Production also requires:
+`render.yaml` defines the active Gunicorn deployment. Configure all `DB_*`
+values for a MySQL 8-compatible provider. Production also requires:
 
 - `APP_ENV=production`
 - a unique `SECRET_KEY`
@@ -142,9 +134,10 @@ backend/.venv/Scripts/python.exe scripts/apply_sql.py --yes database/migrations/
 - `TRUST_PROXY=true` only when exactly one trusted hosting proxy fronts the app
 - TLS database settings appropriate for the provider
 
-Important: authentication and role-based authorization are not implemented.
+Important: core session and role-based authorization primitives exist, but login
+routes and authorization enforcement across feature endpoints are not complete.
 Do not expose this application to untrusted users or real customer data until
-those controls and an audit trail are added.
+those controls and an audit trail are fully integrated.
 
 ## Security characteristics
 
@@ -156,5 +149,4 @@ authorization.
 
 ## License
 
-No license has been selected. The repository's `LICENSE` file is intentionally
-empty until the owner chooses licensing terms.
+No software license has been selected.

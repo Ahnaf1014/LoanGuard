@@ -1,19 +1,18 @@
 """Application entry point and route registration for LoanGuard.
 
-This file deliberately contains only application-wide setup. Feature-specific
-HTTP handlers live in ``routes/`` so borrower, application, and dashboard
-work can evolve independently.
+This file handles application-wide setup and registers feature blueprints.
 """
 
 from flask import Flask
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from config import Config
-from routes.application import application_bp
-from routes.assessment import assessment_bp
-from routes.borrower import borrower_bp
-from routes.dashboard import dashboard_bp
-from security import init_security
+from core.auth import init_auth
+from core.security import init_security
+from web.application import application_bp
+from web.assessment import assessment_bp
+from web.borrower import borrower_bp
+from web.dashboard import dashboard_bp
 
 
 def create_app(config_object=Config):
@@ -39,6 +38,7 @@ def create_app(config_object=Config):
     flask_app.register_blueprint(application_bp)
     flask_app.register_blueprint(assessment_bp)
     flask_app.register_blueprint(dashboard_bp)
+    init_auth(flask_app)
     init_security(flask_app)
 
     return flask_app

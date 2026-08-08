@@ -9,23 +9,12 @@ __pycache__/
 # Environment variables
 .env
 
-# VS Code local/generated state. Share the reviewed workspace configuration.
-!.vscode/
-.vscode/*
-!.vscode/settings.json
-!.vscode/extensions.json
-!.vscode/launch.json
-!.vscode/tasks.json
 *.session.sql
 
 # macOS
 .DS_Store
 
 # Windows
-Thumbs.db
-
-# OS Files
-.DS_Store
 Thumbs.db
 
 # Flask

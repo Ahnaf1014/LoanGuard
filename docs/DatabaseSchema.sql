@@ -1,4 +1,0 @@
--- Documentation pointer only.
--- The canonical executable schema is ../database/schema.sql relative to this
--- documentation file. Run database/schema.sql from the
--- repository root; do not maintain a duplicate schema here.

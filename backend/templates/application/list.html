@@ -1,0 +1,79 @@
+{% extends "layouts/base.html" %} {% block content %}
+
+<!-- Application register: borrower names are joined in one query by the service. -->
+<h2>Loan Applications</h2>
+
+<a href="{{ url_for('application.add_application') }}" class="btn btn-success mb-3">New Application</a>
+
+<table class="table table-bordered table-hover">
+  <thead>
+    <tr>
+      <th>ID</th>
+
+      <th>Borrower</th>
+
+      <th>Date</th>
+
+      <th>Amount</th>
+
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for application in applications %}
+
+    <tr>
+      <td>{{ application.application_id }}</td>
+
+      <td>{{ application.first_name }} {{ application.last_name }}</td>
+
+      <td>{{ application.application_date }}</td>
+
+      <td>{{ application.requested_amount }}</td>
+
+      <td>
+        <!-- Colour provides a quick status signal without changing the text. -->
+        {% if application.application_status == "Approved" %}
+
+        <span class="badge bg-success">
+          {{ application.application_status }}
+        </span>
+
+        {% elif application.application_status == "Rejected" %}
+
+        <span class="badge bg-danger">
+          {{ application.application_status }}
+        </span>
+
+        {% elif application.application_status == "Under Review" %}
+
+        <span class="badge bg-primary">
+          {{ application.application_status }}
+        </span>
+
+        {% else %}
+
+        <span class="badge bg-warning text-dark">
+          {{ application.application_status }}
+        </span>
+
+        {% endif %}
+      </td>
+
+      <td>
+        <!-- This project supports status review, not direct application deletion. -->
+        <a
+          href="{{ url_for('application.edit_application', application_id=application.application_id) }}"
+          class="btn btn-warning btn-sm"
+          >Change Status</a
+        >
+      </td>
+    </tr>
+
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

@@ -1,1 +1,0 @@
-"""LoanGuard automated tests."""

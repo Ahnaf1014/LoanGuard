@@ -6,12 +6,12 @@ but the example secret must be replaced in deployed environments.
 """
 
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
-# ``load_dotenv`` is harmless when no .env file exists and permits both
-# ``python app.py`` from backend/ and ``flask`` commands to use local settings.
-load_dotenv()
+BACKEND_DIR = Path(__file__).resolve().parent
+load_dotenv(BACKEND_DIR / ".env")
 
 
 class Config:

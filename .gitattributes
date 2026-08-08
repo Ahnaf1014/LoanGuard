@@ -14,4 +14,4 @@
 *.jpg binary
 *.jpeg binary
 *.gif binary
-*.drawio binary
+*.drawio text eol=lf
