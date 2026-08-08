@@ -1,51 +1,83 @@
 """Borrower feature routes: list, create, update, and delete borrowers."""
 
 import pymysql
-from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
+from flask import (
+    Blueprint,
+    abort,
+    current_app,
+    flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 
-from database.connection import get_connection
+from database.connection import cursor_scope
+from validation import ValidationError, email_address, optional_text, required_text
 
-# All borrower endpoints are named ``borrower.<function_name>`` for url_for.
 borrower_bp = Blueprint("borrower", __name__)
+
+_BORROWER_COLUMNS = """
+    borrower_id,
+    first_name,
+    last_name,
+    nid,
+    email,
+    house_no,
+    street,
+    city,
+    postal_code
+"""
+
+
+def _borrower_values(form):
+    return (
+        required_text(form, "first_name", label="First name", max_length=50),
+        required_text(form, "last_name", label="Last name", max_length=50),
+        required_text(form, "nid", label="NID", max_length=20),
+        email_address(form),
+        optional_text(form, "house_no", label="House number", max_length=20),
+        optional_text(form, "street", label="Street", max_length=100),
+        optional_text(form, "city", label="City", max_length=50),
+        optional_text(form, "postal_code", label="Postal code", max_length=10),
+    )
 
 
 @borrower_bp.route("/borrowers")
 def borrowers():
     """Render the borrower directory ordered by its stable primary key."""
 
-    conn = get_connection()
-    cursor = conn.cursor()
+    with cursor_scope() as cursor:
+        cursor.execute(
+            f"""
+            SELECT {_BORROWER_COLUMNS}
+            FROM BORROWER
+            ORDER BY borrower_id
+            """
+        )
+        borrower_rows = cursor.fetchall()
 
-    # Templates need the full address record for future display extensions.
-    cursor.execute("""
-        SELECT *
-        FROM BORROWER
-        ORDER BY borrower_id
-    """)
-
-    borrowers = cursor.fetchall()
-
-    cursor.close()
-    conn.close()
-
-    return render_template("borrowers.html", borrowers=borrowers)
+    return render_template("borrowers.html", borrowers=borrower_rows)
 
 
 @borrower_bp.route("/borrowers/add", methods=["GET", "POST"])
 def add_borrower():
     """Show the create form or persist one new borrower from a POST request."""
 
-    if request.method == "POST":
+    if request.method == "GET":
+        return render_template("add_borrower.html")
 
-        conn = get_connection()
-        cursor = conn.cursor()
+    try:
+        values = _borrower_values(request.form)
+    except ValidationError as exc:
+        flash(str(exc), "danger")
+        return redirect(url_for("borrower.add_borrower"))
 
-        try:
-
-            # Parameterized SQL prevents submitted values from becoming SQL code.
+    try:
+        with cursor_scope(commit=True) as cursor:
             cursor.execute(
                 """
-                INSERT INTO BORROWER(
+                INSERT INTO BORROWER (
                     first_name,
                     last_name,
                     nid,
@@ -55,78 +87,45 @@ def add_borrower():
                     city,
                     postal_code
                 )
-                VALUES(%s,%s,%s,%s,%s,%s,%s,%s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 """,
-                (
-                    request.form["first_name"],
-                    request.form["last_name"],
-                    request.form["nid"],
-                    request.form["email"],
-                    request.form["house_no"],
-                    request.form["street"],
-                    request.form["city"],
-                    request.form["postal_code"],
-                ),
+                values,
             )
+    except pymysql.err.IntegrityError:
+        flash("Email or NID already exists.", "danger")
+        return redirect(url_for("borrower.add_borrower"))
+    except pymysql.MySQLError:
+        current_app.logger.exception("Failed to create borrower")
+        flash("The borrower could not be saved. Please try again.", "danger")
+        return redirect(url_for("borrower.add_borrower"))
 
-            conn.commit()
-            flash("Borrower added successfully!", "success")
-
-        except pymysql.err.IntegrityError:
-
-            # Unique NID and email constraints are enforced by MySQL.
-            conn.rollback()
-            flash("Email or NID already exists.", "danger")
-
-        finally:
-
-            cursor.close()
-            conn.close()
-
-        return redirect(url_for("borrower.borrowers"))
-
-    return render_template("add_borrower.html")
+    flash("Borrower added successfully.", "success")
+    return redirect(url_for("borrower.borrowers"))
 
 
 @borrower_bp.route("/borrowers/delete/<int:borrower_id>", methods=["POST"])
 def delete_borrower(borrower_id):
     """Delete an unreferenced borrower after an explicit POST confirmation."""
 
-    conn = get_connection()
-    cursor = conn.cursor()
-
     try:
-
-        cursor.execute(
-            """
-            DELETE FROM BORROWER
-            WHERE borrower_id=%s
-            """,
-            (borrower_id,),
-        )
-
-        # rowcount distinguishes a stale UI link from a successful deletion.
-        if cursor.rowcount == 0:
-            conn.rollback()
-            flash("Borrower not found.", "warning")
-        else:
-            conn.commit()
-            flash("Borrower deleted successfully.", "success")
-
+        with cursor_scope(commit=True) as cursor:
+            cursor.execute(
+                "DELETE FROM BORROWER WHERE borrower_id = %s",
+                (borrower_id,),
+            )
+            deleted = cursor.rowcount > 0
     except pymysql.err.IntegrityError:
+        flash("Cannot delete a borrower with loan applications.", "danger")
+        return redirect(url_for("borrower.borrowers"))
+    except pymysql.MySQLError:
+        current_app.logger.exception("Failed to delete borrower %s", borrower_id)
+        flash("The borrower could not be deleted. Please try again.", "danger")
+        return redirect(url_for("borrower.borrowers"))
 
-        # The foreign key intentionally protects application history.
-        conn.rollback()
-        flash(
-            "Cannot delete borrower because loan applications exist.",
-            "danger",
-        )
-
-    finally:
-
-        cursor.close()
-        conn.close()
-
+    if deleted:
+        flash("Borrower deleted successfully.", "success")
+    else:
+        flash("Borrower not found.", "warning")
     return redirect(url_for("borrower.borrowers"))
 
 
@@ -134,72 +133,62 @@ def delete_borrower(borrower_id):
 def edit_borrower(borrower_id):
     """Show or update a borrower; return 404 when the ID does not exist."""
 
-    conn = get_connection()
-    cursor = conn.cursor()
-
     if request.method == "POST":
+        try:
+            values = _borrower_values(request.form)
+        except ValidationError as exc:
+            flash(str(exc), "danger")
+            return redirect(url_for("borrower.edit_borrower", borrower_id=borrower_id))
 
         try:
-
-            # NID is included here because the edit form exposes it to staff.
-            cursor.execute(
-                """
-                UPDATE BORROWER
-                SET
-                    first_name=%s,
-                    last_name=%s,
-                    nid=%s,
-                    email=%s,
-                    house_no=%s,
-                    street=%s,
-                    city=%s,
-                    postal_code=%s
-                WHERE borrower_id=%s
-                """,
-                (
-                    request.form["first_name"],
-                    request.form["last_name"],
-                    request.form["nid"],
-                    request.form["email"],
-                    request.form["house_no"],
-                    request.form["street"],
-                    request.form["city"],
-                    request.form["postal_code"],
-                    borrower_id,
-                ),
-            )
-
-            conn.commit()
-            flash("Borrower updated successfully!", "success")
-
+            with cursor_scope(commit=True) as cursor:
+                cursor.execute(
+                    """
+                    UPDATE BORROWER
+                    SET first_name = %s,
+                        last_name = %s,
+                        nid = %s,
+                        email = %s,
+                        house_no = %s,
+                        street = %s,
+                        city = %s,
+                        postal_code = %s
+                    WHERE borrower_id = %s
+                    """,
+                    (*values, borrower_id),
+                )
+                if cursor.rowcount == 0:
+                    cursor.execute(
+                        "SELECT borrower_id FROM BORROWER WHERE borrower_id = %s",
+                        (borrower_id,),
+                    )
+                    exists = cursor.fetchone() is not None
+                else:
+                    exists = True
         except pymysql.err.IntegrityError:
-
-            conn.rollback()
             flash("Email or NID already exists.", "danger")
+            return redirect(url_for("borrower.edit_borrower", borrower_id=borrower_id))
+        except pymysql.MySQLError:
+            current_app.logger.exception("Failed to update borrower %s", borrower_id)
+            flash("The borrower could not be updated. Please try again.", "danger")
+            return redirect(url_for("borrower.edit_borrower", borrower_id=borrower_id))
 
-        finally:
-
-            cursor.close()
-            conn.close()
-
+        if not exists:
+            abort(404)
+        flash("Borrower updated successfully.", "success")
         return redirect(url_for("borrower.borrowers"))
 
-    cursor.execute(
-        """
-        SELECT *
-        FROM BORROWER
-        WHERE borrower_id=%s
-        """,
-        (borrower_id,),
-    )
+    with cursor_scope() as cursor:
+        cursor.execute(
+            f"""
+            SELECT {_BORROWER_COLUMNS}
+            FROM BORROWER
+            WHERE borrower_id = %s
+            """,
+            (borrower_id,),
+        )
+        borrower = cursor.fetchone()
 
-    borrower = cursor.fetchone()
-
-    cursor.close()
-    conn.close()
-
-    # Avoid rendering a form whose ``borrower`` value would be missing.
     if borrower is None:
         abort(404)
-
     return render_template("edit_borrower.html", borrower=borrower)

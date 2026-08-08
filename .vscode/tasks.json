@@ -1,0 +1,87 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "LoanGuard: Install dependencies",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "-m",
+                "pip",
+                "install",
+                "-r",
+                "${workspaceFolder}/requirements.txt"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "LoanGuard: Run tests",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "-m",
+                "unittest",
+                "discover",
+                "-v",
+                "-s",
+                "${workspaceFolder}/tests",
+                "-p",
+                "test_*.py"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "LoanGuard: Compile check",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "-m",
+                "compileall",
+                "-q",
+                "${workspaceFolder}/backend"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "LoanGuard: Check database",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "${workspaceFolder}/scripts/check_database.py"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "LoanGuard: Backup database",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "${workspaceFolder}/scripts/backup_database.py"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "LoanGuard: Smoke test web pages",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "${workspaceFolder}/scripts/smoke_web.py"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "LoanGuard: Test database workflows",
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": [
+                "${workspaceFolder}/scripts/test_database_workflows.py"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}

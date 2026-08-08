@@ -1,34 +1,42 @@
 # LoanGuard architecture
 
-```
+```text
 Browser
-  → Flask blueprint route
-  → PyMySQL connection and parameterized SQL
-  → MySQL tables / views / procedures / triggers
-  → route context or flash message
-  → Jinja template
-  → Browser
+  -> Flask application-wide security controls
+  -> Feature blueprint
+  -> Shared validation
+  -> Transaction-scoped PyMySQL cursor
+  -> MySQL constraints / views / procedures / triggers
+  -> Jinja response or POST/Redirect/GET feedback
 ```
 
-## Backend layout
+## Backend responsibilities
 
-- `backend/app.py`: creates Flask and registers every feature blueprint.
-- `backend/config.py`: reads Flask and MySQL settings from environment values.
-- `backend/database/connection.py`: creates transactional `DictCursor`
-  connections.
-- `backend/routes/`: one module per user-facing feature.
-- `backend/templates/`: base layout and corresponding feature pages.
+- `backend/app.py`: application factory, configuration, proxy handling, and
+  blueprint registration.
+- `backend/config.py`: environment-backed Flask and MySQL settings.
+- `backend/security.py`: CSRF validation and browser response headers.
+- `backend/validation.py`: reusable input parsing and bounds checks.
+- `backend/database/connection.py`: TLS-capable connections and deterministic
+  transaction/cursor cleanup.
+- `backend/routes/`: one blueprint per user-facing feature.
+- `backend/templates/`: presentation-only Jinja pages.
 
 ## Feature ownership
 
-| Blueprint | Route module | Templates | Responsibility |
-|---|---|---|---|
-| dashboard | `dashboard.py` | `dashboard.html` | Portfolio totals |
-| borrower | `borrower.py` | borrower add/edit/list pages | Borrower records |
-| application | `application.py` | application add/edit/list pages | Loan requests and status |
-| assessment | `assessment.py` | assessment add/list pages | Analyst evaluations |
+| Blueprint | Module | Responsibility |
+|---|---|---|
+| `dashboard` | `routes/dashboard.py` | Portfolio totals |
+| `borrower` | `routes/borrower.py` | Borrower CRUD |
+| `application` | `routes/application.py` | Applications and manager decisions |
+| `assessment` | `routes/assessment.py` | Analyst assessments |
 
-## Database layout
+Repository-level `database/` owns deployable MySQL definitions. It is separate
+from `backend/database/`, which owns runtime connectivity only.
 
-Repository-level `database/` contains deployable MySQL scripts. It is separate
-from `backend/database/`, whose only responsibility is runtime connections.
+## Architectural boundary
+
+This project intentionally uses raw parameterized SQL rather than an ORM.
+Authentication, authorization, payments UI, loan origination UI, pagination,
+and audit logging remain future modules. Authentication and audit logging are
+required before production use.

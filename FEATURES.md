@@ -16,7 +16,8 @@ borrower with history from being deleted.
 ### Loan applications
 
 Lists applications with borrower names, creates an application assigned to a
-loan officer, and changes the application status through the allowed enum.
+validated loan officer, and records terminal decisions with a branch manager
+and decision timestamp.
 
 ### Credit assessments
 
@@ -26,9 +27,8 @@ then inserts a new assessment.
 
 ## Planned / schema-supported
 
-- Branch-manager decision assignment and decision timestamps.
 - Loan creation after approval.
 - Personal, home, and business loan subtype creation.
 - Payment recording and repayment/balance views.
-- Authentication and role-based authorization.
+- Authentication, role-based authorization, and audit logging.
 - Search, pagination, reporting, tests, and API endpoints.

@@ -18,9 +18,10 @@ decisions; it does not automatically approve a loan.
 ## Current implementation boundary
 
 Implemented web modules are dashboard reporting, borrower management, loan
-application management, and credit-assessment entry/listing. The schema also
-supports loan, loan subtype, payment, and manager-decision workflows, but those
-do not yet have dedicated Flask route/template modules.
+application management (including branch-manager decisions), and
+credit-assessment entry/listing. The schema also supports loan, loan subtype,
+and payment workflows, but those do not yet have dedicated Flask
+route/template modules.
 
 ## Preservation rule
 

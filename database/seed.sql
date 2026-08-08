@@ -1,5 +1,3 @@
-USE defaultdb;
-
 -- =====================================================
 -- BANK_STAFF
 -- =====================================================
@@ -16,35 +14,35 @@ VALUES
         'John',
         'Officer',
         'john.officer@loanguard.com',
-        'demo_password',
+        '$disabled$authentication-not-implemented',
         'LoanOfficer'
     ),
     (
         'Sarah',
         'Rahman',
         'sarah.rahman@loanguard.com',
-        'demo_password',
+        '$disabled$authentication-not-implemented',
         'LoanOfficer'
     ),
     (
         'Tanvir',
         'Ahmed',
         'tanvir.ahmed@loanguard.com',
-        'demo_password',
+        '$disabled$authentication-not-implemented',
         'LoanOfficer'
     ),
     (
         'Nabila',
         'Islam',
         'nabila.islam@loanguard.com',
-        'demo_password',
+        '$disabled$authentication-not-implemented',
         'CreditAnalyst'
     ),
     (
         'Hasan',
         'Khan',
         'hasan.khan@loanguard.com',
-        'demo_password',
+        '$disabled$authentication-not-implemented',
         'BranchManager'
     );
 
@@ -270,7 +268,7 @@ VALUES
     (
         4,
         1,
-        5,
+        NULL,
         '2026-07-04',
         700000,
         'Home Renovation',
@@ -282,7 +280,7 @@ VALUES
     (
         5,
         2,
-        5,
+        NULL,
         '2026-07-05',
         250000,
         'Wedding',
@@ -330,7 +328,7 @@ VALUES
     (
         9,
         3,
-        5,
+        NULL,
         '2026-07-09',
         400000,
         'Vehicle Purchase',
@@ -342,7 +340,7 @@ VALUES
     (
         10,
         1,
-        5,
+        NULL,
         '2026-07-10',
         150000,
         'Education',

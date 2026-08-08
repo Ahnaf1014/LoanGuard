@@ -3,7 +3,7 @@
 <!-- Borrower directory; values are supplied by routes/borrower.py. -->
 <h2 class="mb-3">Borrowers</h2>
 
-<a href="/borrowers/add" class="btn btn-primary mb-3"> Add Borrower </a>
+<a href="{{ url_for('borrower.add_borrower') }}" class="btn btn-primary mb-3">Add Borrower</a>
 
 <table class="table table-striped table-bordered">
   <thead>
@@ -29,7 +29,7 @@
         <!-- Editing is safe to navigate with GET; deletion requires POST below. -->
         <a
           class="btn btn-warning btn-sm"
-          href="/borrowers/edit/{{ borrower.borrower_id }}"
+          href="{{ url_for('borrower.edit_borrower', borrower_id=borrower.borrower_id) }}"
         >
           Edit
         </a>
@@ -38,8 +38,9 @@
           method="post"
           action="{{ url_for('borrower.delete_borrower', borrower_id=borrower.borrower_id) }}"
           class="d-inline"
-          onsubmit="return confirm('Delete this borrower?');"
+          data-confirm="Delete this borrower?"
         >
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
           <!-- The confirmation prevents accidental clicks. The server still
                enforces foreign-key rules before committing the deletion. -->
           <button class="btn btn-danger btn-sm" type="submit">Delete</button>

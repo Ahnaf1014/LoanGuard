@@ -15,8 +15,9 @@
 - Use uppercase table names to match the existing schema.
 - Use multiline SQL for readability and parameterize every user-derived value.
 - Prefer joins for display data instead of one query per listed record.
-- Keep transactions explicit: `commit` only after a complete write; `rollback`
-  in the matching exception path.
+- Use `cursor_scope()` so commits, rollbacks, cursors, and connections are
+  handled consistently. A route should not own manual cleanup unless the shared
+  scope cannot express its transaction.
 
 ## Templates
 
@@ -25,3 +26,4 @@
 - Keep Jinja loops and conditions presentation-only; query and validation logic
   belongs in route modules.
 - Use POST for destructive state changes and display flash feedback afterward.
+- Include the session CSRF token in every state-changing form.

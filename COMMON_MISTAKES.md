@@ -6,6 +6,7 @@
   `rollback()` after a failed write.
 - Do not return early while leaving a cursor or connection open.
 - Do not make destructive actions GET routes; borrower deletion is POST-only.
+- Do not add a POST form without the shared `_csrf_token` hidden field.
 - Do not trust HTML `required`, `min`, or select values alone. Validate values in
   the route and rely on database constraints as a final safeguard.
 - Do not change enum values in templates without matching the schema and route

@@ -9,8 +9,14 @@ __pycache__/
 # Environment variables
 .env
 
-# VS Code
-.vscode/
+# VS Code local/generated state. Share the reviewed workspace configuration.
+!.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+*.session.sql
 
 # macOS
 .DS_Store
@@ -27,3 +33,12 @@ instance/
 
 # Logs
 *.log
+
+# Test and coverage artifacts
+.coverage
+htmlcov/
+.pytest_cache/
+.ruff_cache/
+
+# Local database backups can contain sensitive records.
+backups/

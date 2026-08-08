@@ -1,0 +1,16 @@
+{
+    "recommendations": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.debugpy",
+        "ms-python.black-formatter",
+        "charliermarsh.ruff",
+        "samuelcolvin.jinjahtml",
+        "esbenp.prettier-vscode",
+        "inferrinizzard.prettier-sql-vscode",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-mysql",
+        "redhat.vscode-yaml",
+        "mikestead.dotenv"
+    ]
+}

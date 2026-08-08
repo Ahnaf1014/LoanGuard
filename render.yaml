@@ -10,6 +10,12 @@ services:
     envVars:
       - key: SECRET_KEY
         generateValue: true
+      - key: APP_ENV
+        value: production
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: TRUST_PROXY
+        value: "true"
       - key: FLASK_DEBUG
         value: "false"
       - key: DB_HOST
@@ -21,4 +27,8 @@ services:
       - key: DB_USER
         sync: false
       - key: DB_PASSWORD
+        sync: false
+      - key: DB_SSL
+        value: "true"
+      - key: DB_SSL_CA
         sync: false

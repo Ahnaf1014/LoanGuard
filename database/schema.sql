@@ -1,9 +1,7 @@
 -- =====================================================
 -- LoanGuard Database Schema
--- Part 1
 -- MySQL 8.0+
 -- =====================================================
-USE defaultdb;
 
 -- =====================================================
 -- BORROWER
@@ -56,15 +54,6 @@ CREATE TABLE BANK_STAFF_PHONE (
 );
 
 -- =====================================================
--- INDEXES
--- =====================================================
-CREATE INDEX idx_borrower_nid ON BORROWER (nid);
-
-CREATE INDEX idx_borrower_email ON BORROWER (email);
-
-CREATE INDEX idx_staff_email ON BANK_STAFF (email);
-
--- =====================================================
 -- LOAN_APPLICATION
 -- =====================================================
 CREATE TABLE LOAN_APPLICATION (
@@ -82,8 +71,18 @@ CREATE TABLE LOAN_APPLICATION (
         'Under Review',
         'Approved',
         'Rejected'
-    ) DEFAULT 'Pending',
+    ) NOT NULL DEFAULT 'Pending',
     decision_date DATETIME NULL,
+    CONSTRAINT chk_application_decision CHECK (
+        (
+            application_status IN ('Approved', 'Rejected')
+            AND decision_date IS NOT NULL
+        )
+        OR (
+            application_status IN ('Pending', 'Under Review')
+            AND decision_date IS NULL
+        )
+    ),
     CONSTRAINT fk_application_borrower FOREIGN KEY (borrower_id) REFERENCES BORROWER (borrower_id) ON UPDATE CASCADE ON DELETE RESTRICT,
     CONSTRAINT fk_application_officer FOREIGN KEY (loan_officer_id) REFERENCES BANK_STAFF (staff_id) ON UPDATE CASCADE ON DELETE RESTRICT,
     CONSTRAINT fk_application_manager FOREIGN KEY (manager_id) REFERENCES BANK_STAFF (staff_id) ON UPDATE CASCADE ON DELETE
@@ -99,7 +98,10 @@ CREATE TABLE CREDIT_ASSESSMENT (
     application_id INT NOT NULL,
     analyst_id INT NOT NULL,
     assessment_date DATE NOT NULL,
-    credit_score SMALLINT NOT NULL CHECK (credit_score >= 0),
+    credit_score SMALLINT NOT NULL CHECK (
+        credit_score >= 0
+        AND credit_score <= 850
+    ),
     risk_level ENUM ('Low', 'Medium', 'High') NOT NULL,
     recommendation ENUM ('Approve', 'Review', 'Reject') NOT NULL,
     default_probability DECIMAL(5, 2) NOT NULL CHECK (
@@ -133,10 +135,14 @@ CREATE TABLE LOAN (
     approved_amount DECIMAL(12, 2) NOT NULL CHECK (approved_amount > 0),
     interest_rate DECIMAL(5, 2) NOT NULL CHECK (interest_rate >= 0),
     loan_term_months INT NOT NULL CHECK (loan_term_months > 0),
-    monthly_installment DECIMAL(12, 2) NOT NULL,
+    monthly_installment DECIMAL(12, 2) NOT NULL CHECK (monthly_installment > 0),
     disbursement_date DATE NOT NULL,
     due_date DATE NOT NULL,
-    current_balance DECIMAL(12, 2) NOT NULL,
+    current_balance DECIMAL(12, 2) NOT NULL CHECK (
+        current_balance >= 0
+        AND current_balance <= approved_amount
+    ),
+    CONSTRAINT chk_loan_dates CHECK (due_date >= disbursement_date),
     CONSTRAINT fk_loan_application FOREIGN KEY (application_id) REFERENCES LOAN_APPLICATION (application_id) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
@@ -172,8 +178,6 @@ CREATE TABLE BUSINESS_LOAN (
 -- =====================================================
 -- INDEXES
 -- =====================================================
-CREATE INDEX idx_loan_number ON LOAN (loan_number);
-
 CREATE INDEX idx_due_date ON LOAN (due_date);
 
 CREATE INDEX idx_disbursement ON LOAN (disbursement_date);
@@ -184,9 +188,9 @@ CREATE INDEX idx_disbursement ON LOAN (disbursement_date);
 CREATE TABLE LOAN_PAYMENT (
     payment_id INT AUTO_INCREMENT PRIMARY KEY,
     loan_id INT NOT NULL,
-    installment_no INT NOT NULL,
+    installment_no INT NOT NULL CHECK (installment_no > 0),
     payment_date DATE NOT NULL,
-    amount DECIMAL(12, 2) NOT NULL,
+    amount DECIMAL(12, 2) NOT NULL CHECK (amount > 0),
     payment_method ENUM (
         'Cash',
         'Bank Transfer',
@@ -208,8 +212,6 @@ CREATE INDEX idx_payment_date ON LOAN_PAYMENT (payment_date);
 
 CREATE INDEX idx_payment_status ON LOAN_PAYMENT (payment_status);
 
-CREATE INDEX idx_payment_reference ON LOAN_PAYMENT (transaction_reference);
-
 CREATE INDEX idx_application_borrower ON LOAN_APPLICATION (borrower_id);
 
 CREATE INDEX idx_application_officer ON LOAN_APPLICATION (loan_officer_id);
@@ -219,5 +221,3 @@ CREATE INDEX idx_application_manager ON LOAN_APPLICATION (manager_id);
 CREATE INDEX idx_assessment_application ON CREDIT_ASSESSMENT (application_id);
 
 CREATE INDEX idx_assessment_analyst ON CREDIT_ASSESSMENT (analyst_id);
-
-CREATE INDEX idx_loan_application ON LOAN (application_id);

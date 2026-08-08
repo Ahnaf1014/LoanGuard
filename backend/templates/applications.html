@@ -3,7 +3,7 @@
 <!-- Application register: borrower names are joined in one query by the route. -->
 <h2>Loan Applications</h2>
 
-<a href="/applications/add" class="btn btn-success mb-3"> New Application </a>
+<a href="{{ url_for('application.add_application') }}" class="btn btn-success mb-3">New Application</a>
 
 <table class="table table-bordered table-hover">
   <thead>
@@ -65,7 +65,7 @@
       <td>
         <!-- This project supports status review, not direct application deletion. -->
         <a
-          href="/applications/edit/{{ application.application_id }}"
+          href="{{ url_for('application.edit_application', application_id=application.application_id) }}"
           class="btn btn-warning btn-sm"
           >Change Status</a
         >

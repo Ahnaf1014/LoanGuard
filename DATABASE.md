@@ -41,3 +41,15 @@
 Use PyMySQL `%s` placeholders and a parameter tuple. A write must either
 `commit()` after success or `rollback()` after an exception, then close cursor
 and connection.
+
+## Setup and portability
+
+Run `schema.sql`, `seed.sql`, `views.sql`, `procedures.sql`, and `triggers.sql`
+in that order against the already selected target database. The scripts do not
+contain a provider-specific `USE` statement.
+
+The payment triggers account for inserted, updated, and deleted Paid records,
+reject overpayments, and require approved applications before loan creation.
+MySQL's check-constraint/foreign-key interaction prevents a check constraint
+from referencing `manager_id` because its foreign key uses `ON DELETE SET NULL`;
+manager presence and role are therefore enforced in the Flask decision workflow.

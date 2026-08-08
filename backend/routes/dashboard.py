@@ -2,9 +2,8 @@
 
 from flask import Blueprint, render_template
 
-from database.connection import get_connection
+from database.connection import cursor_scope
 
-# A blueprint keeps dashboard URLs separate from borrower/application features.
 dashboard_bp = Blueprint("dashboard", __name__)
 
 
@@ -12,37 +11,17 @@ dashboard_bp = Blueprint("dashboard", __name__)
 def dashboard():
     """Load summary metrics and render the dashboard landing page."""
 
-    conn = get_connection()
-    cursor = conn.cursor()
+    with cursor_scope() as cursor:
+        cursor.execute(
+            """
+            SELECT
+                (SELECT COUNT(*) FROM BORROWER) AS total_borrowers,
+                COUNT(*) AS total_applications,
+                COALESCE(SUM(application_status = 'Pending'), 0) AS pending,
+                COALESCE(SUM(requested_amount), 0) AS total_amount
+            FROM LOAN_APPLICATION
+            """
+        )
+        metrics = cursor.fetchone()
 
-    # Run small aggregate queries instead of loading every record into memory.
-    cursor.execute("SELECT COUNT(*) AS total FROM BORROWER")
-    total_borrowers = cursor.fetchone()["total"]
-
-    cursor.execute("SELECT COUNT(*) AS total FROM LOAN_APPLICATION")
-    total_applications = cursor.fetchone()["total"]
-
-    cursor.execute("""
-        SELECT COUNT(*) AS total
-        FROM LOAN_APPLICATION
-        WHERE application_status='Pending'
-    """)
-    pending = cursor.fetchone()["total"]
-
-    cursor.execute("""
-        SELECT IFNULL(SUM(requested_amount),0) AS total
-        FROM LOAN_APPLICATION
-    """)
-    total_amount = cursor.fetchone()["total"]
-
-    # This route is read-only; closing releases the MySQL connection promptly.
-    cursor.close()
-    conn.close()
-
-    return render_template(
-        "dashboard.html",
-        total_borrowers=total_borrowers,
-        total_applications=total_applications,
-        pending=pending,
-        total_amount=total_amount,
-    )
+    return render_template("dashboard.html", **metrics)

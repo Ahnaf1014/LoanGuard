@@ -1,379 +1,160 @@
-# 🏦 LoanGuard
+# LoanGuard
 
-A Flask-based Loan Management System developed as a Database Management System (DBMS) project. LoanGuard streamlines the management of borrowers and loan applications while demonstrating relational database design, SQL programming, and full-stack web development using Flask and MySQL.
+LoanGuard is a Flask and MySQL loan-management system built around explicit,
+parameterized SQL. It supports borrower records, loan applications, manager
+decisions, credit assessments, portfolio metrics, and the underlying loan and
+payment data model.
 
----
+## Implemented workflows
 
-## 📌 Project Overview
+- Dashboard totals for borrowers, applications, pending work, and requested value
+- Borrower create, list, edit, and protected delete
+- Loan-application creation with validated loan-officer assignment
+- Application decisions with branch-manager attribution and timestamps
+- Credit-assessment creation with validated analyst assignment
+- MySQL views, stored procedures, constraints, and payment-balance triggers
 
-LoanGuard is designed to simulate the workflow of a financial institution managing loan applications. The system allows bank staff to manage borrower information, create loan applications, and monitor application status through a simple web interface backed by a normalized MySQL database.
+The schema also models approved loans, loan subtypes, and repayments. Dedicated
+web pages for those areas are not implemented yet.
 
-This project demonstrates:
+## Technology
 
-- Relational Database Design
-- Entity-Relationship Modeling (EERD)
-- SQL Constraints
-- Stored Procedures
-- Database Views
-- Database Triggers
-- Flask Backend Development
-- MySQL Integration
-
----
-
-# ✨ Features
-
-## 👤 Borrower Management
-
-- View all borrowers
-- Add new borrowers
-- Edit borrower information
-- Delete borrowers
-- Validation for duplicate Email and NID
-- Flash messages for successful and failed operations
-
----
-
-## 📄 Loan Application Management
-
-- View all loan applications
-- Create new loan applications
-- Update application status
-- Track application details
-
----
-
-## 🗄 Database Features
-
-- Fully normalized relational schema
-- Primary Keys
-- Foreign Keys
-- CHECK Constraints
-- ENUM attributes
-- Stored Procedures
-- Views
-- Triggers
-- Sample Seed Data
-
----
-
-# 🛠 Technologies Used
-
-### Backend
-
-- Python
-- Flask
+- Python 3.12+
+- Flask 3
 - PyMySQL
+- MySQL 8.0+
+- Jinja, Bootstrap 5, and plain JavaScript
 
-### Database
+## Project layout
 
-- MySQL
-- MySQL Workbench
-
-### Frontend
-
-- HTML5
-- Bootstrap 5
-- Jinja2 Templates
-
-### Development Tools
-
-- VS Code
-- Git
-- GitHub
-
----
-
-# 📂 Project Structure
-
-```
-LoanGuard
-│
-├── backend
-│   ├── app.py
-│   ├── config.py
-│   ├── database
-│   │   └── connection.py
-│   │
-│   ├── routes
-│   │   ├── borrower.py
-│   │   └── application.py
-│   │
-│   ├── templates
-│   │   ├── base.html
-│   │   ├── borrowers.html
-│   │   ├── add_borrower.html
-│   │   ├── edit_borrower.html
-│   │   ├── applications.html
-│   │   ├── add_application.html
-│   │   └── edit_application.html
-│   │
-│   └── static
-│
-├── database
-│   ├── schema.sql
-│   ├── seed.sql
-│   ├── views.sql
-│   ├── procedures.sql
-│   └── triggers.sql
-│
-├── requirements.txt
-├── README.md
-└── .gitignore
+```text
+backend/
+  app.py                 Flask application factory and entry point
+  config.py              environment-backed configuration
+  database/connection.py MySQL connection and transaction helpers
+  routes/                 feature blueprints
+  security.py             CSRF and browser security controls
+  validation.py           shared server-side form validation
+  templates/              Jinja pages
+  static/                 CSS and JavaScript
+database/
+  schema.sql              tables, constraints, and indexes
+  seed.sql                demonstration records
+  views.sql               reporting view
+  procedures.sql          status-filter procedure
+  triggers.sql            loan/payment workflow protection
+scripts/
+  check_database.py       read-only configured-database health check
+tests/                    standard-library unit tests
 ```
 
----
+## Local setup
 
-# 🗄 Database Objects
+### 1. Create the Python environment
 
-The project contains the following SQL objects:
+From the repository root on Windows:
 
-### Tables
-
-- BORROWER
-- BANK_STAFF
-- LOAN_APPLICATION
-- LOAN
-- LOAN_PAYMENT
-- CREDIT_ASSESSMENT
-- BORROWER_PHONE
-
-### Views
-
-- Applications by borrower
-- Loan summary views
-
-### Stored Procedures
-
-- Retrieve applications by status
-
-### Trigger
-
-- Automatically update loan balance after successful payment
-
----
-
-# ⚙️ Installation
-
-## Clone the repository
-
-```bash
-git clone https://github.com/Ahnaf1014/LoanGuard.git
+```powershell
+py -3.12 -m venv backend/.venv
+backend/.venv/Scripts/python.exe -m pip install -r requirements.txt
 ```
 
-```bash
-cd LoanGuard
+If the `py` launcher is unavailable, select an installed Python 3.12+ executable
+when creating the environment.
+
+### 2. Configure environment variables
+
+```powershell
+Copy-Item .env.example backend/.env
 ```
 
----
+Edit `backend/.env` for the local MySQL server. Generate a development secret,
+for example:
 
-## Create a virtual environment
-
-```bash
-python -m venv .venv
+```powershell
+backend/.venv/Scripts/python.exe -c "import secrets; print(secrets.token_hex(32))"
 ```
 
-Activate it
+Never commit `backend/.env`; it is intentionally ignored.
 
-### Windows
+### 3. Initialize MySQL
 
-```bash
-.venv\Scripts\activate
+Create a database named `LoanGuard` with `utf8mb4`, then run these files against
+that selected database in order:
+
+1. `database/schema.sql`
+2. `database/seed.sql`
+3. `database/views.sql`
+4. `database/procedures.sql`
+5. `database/triggers.sql`
+
+The SQL files do not hard-code a provider-specific database name. The active
+MySQL connection determines the target database.
+
+### 4. Run the application
+
+```powershell
+Set-Location backend
+.venv/Scripts/python.exe app.py
 ```
 
----
+Open <http://127.0.0.1:5000>.
 
-## Install dependencies
+## VS Code workspace
 
-```bash
-pip install -r requirements.txt
+Open the repository root in VS Code. The shared workspace includes:
+
+- the correct `backend/.venv` interpreter path;
+- Flask debugging (`LoanGuard: Flask`);
+- test, compile, dependency-install, and database-health tasks;
+- SQLTools MySQL connection metadata without a stored password;
+- formatter, linter, Jinja, SQL, YAML, and environment-file recommendations.
+
+Run tasks from **Terminal → Run Task**. SQLTools prompts for the MySQL password
+when connecting to `LoanGuard (Local MySQL)`.
+
+## Validation
+
+```powershell
+backend/.venv/Scripts/python.exe -m unittest discover -v -s tests -p test_*.py
+backend/.venv/Scripts/python.exe -m compileall -q backend tests
+backend/.venv/Scripts/python.exe scripts/check_database.py
 ```
 
----
+The database check is read-only. It verifies required tables, trigger versions,
+staff-role relationships, decision metadata, and loan balances.
 
-# 🚀 Deploying to Render
+For a database created before the hardened constraints and triggers, back it up
+and apply the one-time upgrade from the repository root:
 
-This project is ready to run on Render as a Python web service, but there is one important caveat:
-
-- Render's free database tier is PostgreSQL, while LoanGuard is built for MySQL.
-- For a free deployment, use a MySQL-compatible free database provider such as PlanetScale, Aiven, or Railway, then set the MySQL connection variables in Render.
-- You can still deploy the web app on Render and connect it to that database.
-
-## Render web service setup
-
-1. Push this repository to GitHub.
-2. In Render, create a new Web Service from the GitHub repo.
-3. Use the following settings:
-   - Build Command: `pip install -r requirements.txt`
-   - Start Command: `gunicorn --chdir backend app:app --bind 0.0.0.0:$PORT`
-4. Add the environment variables in the Render dashboard:
-   - `SECRET_KEY`
-   - `FLASK_DEBUG=false`
-   - `DB_HOST`
-   - `DB_PORT=3306`
-   - `DB_NAME`
-   - `DB_USER`
-   - `DB_PASSWORD`
-5. Connect the web service to your free MySQL database and run the SQL files in the project `database/` folder in the same order shown below.
-
-## Free database options
-
-- PlanetScale (MySQL-compatible) — often the easiest free option for a small app.
-- Aiven free MySQL / MariaDB tier — good if you want a managed database.
-- Railway — includes MySQL plans, but availability changes over time.
-
-If you prefer to stay fully on Render, you would need to migrate the schema from MySQL to PostgreSQL and rewrite the SQL syntax accordingly.
-
----
-
-# 🗄 Database Setup
-
-Create a MySQL database.
-
-Execute the SQL files in the following order:
-
-```
-schema.sql
-
-↓
-
-seed.sql
-
-↓
-
-views.sql
-
-↓
-
-procedures.sql
-
-↓
-
-triggers.sql
+```powershell
+backend/.venv/Scripts/python.exe scripts/apply_sql.py --yes database/migrations/001_harden_data_integrity.sql database/triggers.sql
 ```
 
-Update your database credentials in:
+## Deployment
 
-```
-backend/config.py
-```
+`render.yaml` and `Procfile` define a Gunicorn deployment. Configure all
+`DB_*` values for a MySQL 8-compatible provider. Production also requires:
 
-or
+- `APP_ENV=production`
+- a unique `SECRET_KEY`
+- `SESSION_COOKIE_SECURE=true`
+- `TRUST_PROXY=true` only when exactly one trusted hosting proxy fronts the app
+- TLS database settings appropriate for the provider
 
-```
-.env
-```
+Important: authentication and role-based authorization are not implemented.
+Do not expose this application to untrusted users or real customer data until
+those controls and an audit trail are added.
 
-depending on your configuration.
+## Security characteristics
 
----
+The current application provides parameterized SQL, transaction rollback,
+server-side validation, CSRF protection, secure cookie defaults, restrictive
+browser headers, POST-only deletion, role validation for workflow assignments,
+and database constraints. These controls do not replace authentication or
+authorization.
 
-# ▶️ Running the Application
+## License
 
-Navigate to the backend folder:
-
-```bash
-cd backend
-```
-
-Run the Flask application:
-
-```bash
-python app.py
-```
-
-Open your browser:
-
-```
-http://127.0.0.1:5000
-```
-
----
-
-# 📸 Screenshots
-
-> Add screenshots inside:
-
-```
-docs/screenshots/
-```
-
-Suggested screenshots:
-
-- Dashboard
-- Borrower List
-- Add Borrower
-- Edit Borrower
-- Loan Applications
-- Add Application
-- Update Application Status
-- MySQL Database
-- ER Diagram
-
-Example:
-
-```markdown
-## Borrowers
-
-![Borrowers](docs/screenshots/borrowers.png)
-```
-
----
-
-# 📊 Entity Relationship Diagram
-
-Add your EER Diagram here.
-
-Example:
-
-```markdown
-![ER Diagram](docs/screenshots/eerd.png)
-```
-
----
-
-# 🚀 Future Improvements
-
-- User Authentication
-- Role-based Access Control
-- Loan Approval Workflow
-- Payment Dashboard
-- Search and Filtering
-- Reports and Analytics
-- Responsive Dashboard
-- File Upload Support
-- REST API
-- Unit Testing
-
----
-
-# 📚 Learning Outcomes
-
-This project demonstrates practical knowledge of:
-
-- Database Normalization
-- SQL Programming
-- Stored Procedures
-- Database Triggers
-- Views
-- Flask Web Development
-- Database Connectivity
-- CRUD Operations
-- Git Version Control
-
----
-
-# 👨‍💻 Author
-
-**Ahnaf Chowdhury**
-
-Computer Science & Engineering Student
-
-GitHub:
-https://github.com/Ahnaf1014
-
----
-
-# 📄 License
-
-This project was developed for academic purposes as part of a Database Management System (DBMS) course.
+No license has been selected. The repository's `LICENSE` file is intentionally
+empty until the owner chooses licensing terms.

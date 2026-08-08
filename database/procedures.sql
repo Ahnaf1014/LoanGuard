@@ -1,5 +1,3 @@
-USE defaultdb;
-
 -- Reusable status filter for reporting tools. The input is VARCHAR because
 -- callers may be different MySQL clients; the table enum remains authoritative.
 DROP PROCEDURE IF EXISTS sp_get_applications_by_status;

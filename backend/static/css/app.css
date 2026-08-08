@@ -25,7 +25,8 @@ a { text-decoration: none; }
 .sidebar {
   width: 16.5rem;
   min-height: 100vh;
-  background: var(--lg-sidebar);
+  background: var(--lg-sidebar) !important;
+  color: #fff;
 }
 
 .brand-mark {

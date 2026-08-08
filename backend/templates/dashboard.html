@@ -43,9 +43,9 @@
 
 <div class="mt-4">
   <!-- Feature entry points for the two records-management workflows. -->
-  <a href="/borrowers" class="btn btn-primary"> Manage Borrowers </a>
+  <a href="{{ url_for('borrower.borrowers') }}" class="btn btn-primary">Manage Borrowers</a>
 
-  <a href="/applications" class="btn btn-success"> Manage Applications </a>
+  <a href="{{ url_for('application.applications') }}" class="btn btn-success">Manage Applications</a>
 </div>
 
 {% endblock %}
